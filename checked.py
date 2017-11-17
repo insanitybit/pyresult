@@ -155,3 +155,12 @@ class Result(Generic[T, E]):
             return Result(Err(self.inner.get()))
         else:
             raise TypeError("Result variant type invalid: " + str(type(self.inner)))
+
+    def or_else(self, f):
+        # type:(Callable[[E], Result[T, O]]) -> Result[T, O]
+        if isinstance(self.inner, Ok):
+            return Result(Ok(self.inner.get()))
+        elif isinstance(self.inner, Err):
+            return f(self.inner.get())
+        else:
+            raise TypeError("Result variant type invalid: " + str(type(self.inner)))
