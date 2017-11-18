@@ -55,4 +55,5 @@ def print_foo(json):
 if __name__ == '__main__':
     hit_rest_api("example.com")\
         .and_then(lambda r: parse_json(r))\
+        .or_else(lambda _: {"foo": "baz" })\
         .if_ok(print_foo)
