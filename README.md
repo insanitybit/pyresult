@@ -1,8 +1,15 @@
 # pyresult
 A Python Result type featuring 2.x compatible type annotations
 
-from checked import *
+
+A small example showing how you can use custom errors, implementing the Error interface, to chain failable operations
+in a type safe manner.
+
+For smaller, isolated examples of the Result API I suggest checking the documentation comments - they should all have
+examples.
 ```python
+from checked import *
+
 class RestError(Error):
     def __init__(self, e):
         # type: (Union[str, Exception]) -> None
