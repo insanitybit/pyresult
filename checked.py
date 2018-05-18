@@ -1,28 +1,22 @@
-# from typing_extensions import Protocol
-try:
-    from typing import Union, TypeVar, Generic, Callable, Optional, Dict
-    T = TypeVar('T')
-    U = TypeVar('U')
-    E = TypeVar('E')
-    O = TypeVar('O')
-except:
-    pass
+from typing import Union, TypeVar, Generic, Callable, Optional, Dict
+
+T = TypeVar('T')
+U = TypeVar('U')
+E = TypeVar('E')
+O = TypeVar('O')
 
 
 class Error(object):
-    """
-    The Error interface provides a conversion method for strings and Exceptions
-    as well as a 'why' method to provide a string representation of the error
-    """
-    @staticmethod
-    def try_from(e):
-        # type: (Union[str, Exception]) -> Error
-        _ = e
-        raise TypeError("Error class is not to be used directly: try_from")
+    def __init__(self, e):
+        # type: (Union[str, Exception]) -> None
+        if isinstance(e, str):
+            self.e = e
+        else:
+            self.e = str(e)
 
     def why(self):
         # type: () -> str
-        raise TypeError("Error class is not to be used directly: why")
+        return self.e
 
 
 class Ok(Generic[T]):
@@ -238,7 +232,7 @@ class Result(Generic[T, E]):
             return None
 
     def if_err(self, f):
-        # type:(Callable[[E], None]) -> Optional[O]
+        # type:(Callable[[E], O]) -> Optional[O]
         """
         Maps a Result[T, E] to an Optional[O], discarding T
         """
@@ -275,7 +269,7 @@ class Result(Generic[T, E]):
             raise TypeError("Result variant type invalid: " + str(type(self.inner)))
 
     def or_else(self, f):
-        # type:(Callable[[E], Result[T, O]]) -> Result[T, O]
+        # type:(Callable[[E], O]) -> Result[T, O]
         """
         Calls `f` if the result is Err, otherwise returns the Ok value of self.
 
@@ -297,6 +291,6 @@ class Result(Generic[T, E]):
         if isinstance(self.inner, Ok):
             return Result(Ok(self.inner.get()))
         elif isinstance(self.inner, Err):
-            return f(self.inner.get())
+            return Result(Err(f(self.inner.get())))
         else:
             raise TypeError("Result variant type invalid: " + str(type(self.inner)))
